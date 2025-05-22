@@ -34,7 +34,7 @@ public class Project {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private String status;
+    private Status status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

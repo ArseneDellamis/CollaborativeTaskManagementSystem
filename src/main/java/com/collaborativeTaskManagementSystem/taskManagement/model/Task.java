@@ -31,7 +31,7 @@ public class Task {
     private LocalDate dueDate;
 
     @Column(nullable = false)
-    private String status;
+    private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
