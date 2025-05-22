@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 
 @Service
-public class AdminAuthService extends BaseService {
+public class AdminAuthService extends BaseAuthService {
     public AdminAuthService(JwtService jwtService,
                             PasswordEncoder passwordEncoder,
                             AuthenticationManager manager,

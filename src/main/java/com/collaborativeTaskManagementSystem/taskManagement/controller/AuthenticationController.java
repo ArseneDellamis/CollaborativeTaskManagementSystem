@@ -1,20 +1,17 @@
 package com.collaborativeTaskManagementSystem.taskManagement.controller;
 
 import com.collaborativeTaskManagementSystem.taskManagement.EmailAlreadyExistsException;
-import com.collaborativeTaskManagementSystem.taskManagement.payload.AuthenticationRequest;
-import com.collaborativeTaskManagementSystem.taskManagement.payload.AuthenticationResponse;
-import com.collaborativeTaskManagementSystem.taskManagement.payload.RegisterRequest;
-import com.collaborativeTaskManagementSystem.taskManagement.payload.ResponseHandler;
+import com.collaborativeTaskManagementSystem.taskManagement.jwtpackage.JwtService;
+import com.collaborativeTaskManagementSystem.taskManagement.model.User;
+import com.collaborativeTaskManagementSystem.taskManagement.payload.*;
 import com.collaborativeTaskManagementSystem.taskManagement.service.UserAuthService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +20,10 @@ public class AuthenticationController {
 
 
     private final UserAuthService service;
+    private final JwtService Jwtservice;
+    private String jwtToken;
 
+    // register user
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
@@ -52,6 +52,7 @@ public class AuthenticationController {
         }
     }
 
+    // login
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
         try {
@@ -62,6 +63,7 @@ public class AuthenticationController {
                             .data(authResponse)
                             .build()
             );
+
 
         } catch (BadCredentialsException ex) {
             // thrown by AuthenticationManager if password is wrong
@@ -78,6 +80,22 @@ public class AuthenticationController {
                             .data(ex.getMessage())
                             .build());
         }
+    }
+
+    @GetMapping("/username")
+    public String getUsername(@NotNull @RequestHeader("Authorization") String token) {
+       jwtToken = token.replace("Bearer ", "");
+       return service.getUsername(jwtToken);
+
+    }
+
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<?> getUserInfo(@NotNull @RequestHeader("Authorization") String token) {
+        jwtToken = token.replace("Bearer ", "");
+        User user = service.getUserInfo(jwtToken);
+        return ResponseEntity.status(HttpStatus.OK).body(new UserInfo(
+                user.getUsername(),
+                user.getEmail()));
     }
 
 }
