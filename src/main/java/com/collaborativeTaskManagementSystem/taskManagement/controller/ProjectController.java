@@ -79,38 +79,102 @@ public class ProjectController {
 
     /**
      * Get project by id
+     * @param id Project ID
+     * @return Project details if found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
-        return ResponseEntity.ok(projectService.getProjectById(id));
+    public ResponseEntity<?> getProjectById(@PathVariable Long id) {
+        try {
+            Project project = projectService.getProjectById(id);
+            return ResponseEntity.ok(project);
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(HttpStatus.NOT_FOUND, "projectId", "Project not found with id: " + id);
+        }
     }
 
     /**
      * Get project by name
+     * @param name Project name
+     * @return Project details if found
      */
-    @GetMapping("/{name}")
-    public ResponseEntity<Project> getProjectById(@PathVariable String name) {
-        return ResponseEntity.ok(projectService.getProjectByName(name));
+    @GetMapping("/name/{name}")
+    public ResponseEntity<?> getProjectByName(@PathVariable String name) {
+        try {
+            Project project = projectService.getProjectByName(name);
+            return ResponseEntity.ok(project);
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(HttpStatus.NOT_FOUND, "projectName", "Project not found with name: " + name);
+        }
     }
 
     /**
      * Update project
+     * @param id Project ID
+     * @param projectDto Project data to update
+     * @return Updated project details
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody ProjectDto projectDto) {
-        Project project = projectService.getProjectById(id);
-        project.setName(projectDto.getProjectName());
-        project.setDescription(projectDto.getProjectDescription());
-        return ResponseEntity.ok(projectService.editProject(project));
+    public ResponseEntity<?> updateProject(
+            @PathVariable Long id,
+            @Valid @RequestBody ProjectDto projectDto) {
+        
+        try {
+            // Check if project exists
+            Project existingProject = projectService.getProjectById(id);
+            
+            // Check if new name already exists (if name is being changed)
+            if (!existingProject.getName().equals(projectDto.getProjectName()) && 
+                repository.existsByNameIgnoreCase(projectDto.getProjectName())) {
+                return buildErrorResponse(
+                    HttpStatus.CONFLICT,
+                    "projectName",
+                    "A project with this name already exists");
+            }
+
+            // Validate status if provided
+            if (projectDto.getStatus() != null && !projectDto.isValidStatus()) {
+                return buildErrorResponse(
+                    HttpStatus.BAD_REQUEST,
+                    "status",
+                    "Invalid status. Valid statuses are: " + ProjectDto.getValidStatusValues());
+            }
+
+            // Update project
+            existingProject.setName(projectDto.getProjectName());
+            existingProject.setDescription(projectDto.getProjectDescription());
+            
+            if (projectDto.getStatus() != null) {
+                existingProject.setStatus(Status.valueOf(projectDto.getStatus().toUpperCase()));
+            }
+            
+            Project updatedProject = projectService.editProject(existingProject);
+            return ResponseEntity.ok(updatedProject);
+            
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(HttpStatus.NOT_FOUND, "projectId", "Project not found with id: " + id);
+        }
     }
 
     /**
      * Delete project
+     * @param id Project ID to delete
+     * @return No content on success
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        projectService.deleteProject(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+        try {
+            // Check if project exists
+            projectService.getProjectById(id);
+            
+            // Delete the project
+            projectService.deleteProject(id);
+            
+            // Return 204 No Content on successful deletion
+            return ResponseEntity.noContent().build();
+            
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(HttpStatus.NOT_FOUND, "projectId", "Project not found with id: " + id);
+        }
     }
 
     /**

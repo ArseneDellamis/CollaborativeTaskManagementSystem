@@ -31,12 +31,12 @@ public class ProjectService {
     }
 
     /**
-     *
      * EDIT PROJECT
      */
-    public String editProject(Project project){
+    public Project editProject(Project project){
 
-        return "updated";
+        return projectRepo.save(project);
+
     }
 
     /**
