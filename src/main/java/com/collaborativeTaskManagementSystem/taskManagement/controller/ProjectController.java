@@ -76,7 +76,43 @@ public class ProjectController {
             .status(HttpStatus.CREATED)
             .body(createdProject);
     }
-    
+
+    /**
+     * Get project by id
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
+        return ResponseEntity.ok(projectService.getProjectById(id));
+    }
+
+    /**
+     * Get project by name
+     */
+    @GetMapping("/{name}")
+    public ResponseEntity<Project> getProjectById(@PathVariable String name) {
+        return ResponseEntity.ok(projectService.getProjectByName(name));
+    }
+
+    /**
+     * Update project
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody ProjectDto projectDto) {
+        Project project = projectService.getProjectById(id);
+        project.setName(projectDto.getProjectName());
+        project.setDescription(projectDto.getProjectDescription());
+        return ResponseEntity.ok(projectService.editProject(project));
+    }
+
+    /**
+     * Delete project
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+        projectService.deleteProject(id);
+        return ResponseEntity.noContent().build();
+    }
+
     /**
      * Handle validation errors
      */

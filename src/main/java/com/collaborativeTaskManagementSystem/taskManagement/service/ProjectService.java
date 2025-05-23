@@ -13,28 +13,44 @@ import java.util.List;
 public class ProjectService {
     private final ProjectRepository projectRepo;
 
-    //create project
+    /**
+     *
+     * CREATE PROJECT
+     *
+     */
     public Project createProject(Project project) {
         return projectRepo.save(project);
     }
 
-    //get all projects
+    /**
+     *
+     * GET ALL PROJECTS
+     */
     public List<Project> getAllProjects(){
         return projectRepo.findAll();
     }
 
-    //edit project
+    /**
+     *
+     * EDIT PROJECT
+     */
     public String editProject(Project project){
 
         return "updated";
     }
 
-    //delete project
+    /**
+     *
+     * DELETE PROJECT
+     */
     public void deleteProject(Long id){
         projectRepo.deleteById(id);
     }
 
-    //add members on the project
+    /**
+     *
+     * ADD MEMBERS TO PROJECT
+     */
     public String addMembers(String name, User user){
         Project project = projectRepo
                 .findByName(name)
@@ -45,7 +61,10 @@ public class ProjectService {
         return "added";
     }
 
-    //delete a team member
+    /**
+     *
+     * DELETE MEMBERS FROM PROJECT
+     */
     public String deleteMember(String name, User user){
         Project project = projectRepo
                 .findByName(name)
@@ -56,15 +75,40 @@ public class ProjectService {
         return "deleted";
     }
 
-    // get all projects by user id
+    /**
+     *
+     * GET PROJECTS BY USER
+     */
     public List<Project> getProjectsByUser(User user){
         return projectRepo.findAllByProjectManagerId(user.getId());
     }
 
-    //get all project as a team member
+    /**
+     *
+     * GET PROJECTS BY TEAM MEMBER
+     */
     public List<Project> getProjectsByTeamMember(User user){
         return projectRepo.findAllByTeamMembersContains(user);
     }
 
+    /**
+     *
+     * GET PROJECT BY ID
+     */
+    public Project getProjectById(Long id) {
+        return projectRepo
+                .findById(id)
+                .orElseThrow(()-> new RuntimeException("Project not found"));
+    }
 
+    /**
+     *
+     * GET PROJECT BY NAME
+     */
+    public Project getProjectByName(String name) {
+
+        return projectRepo
+                .findByName(name)
+                .orElseThrow(()-> new RuntimeException("Project not found"));
+    }
 }
