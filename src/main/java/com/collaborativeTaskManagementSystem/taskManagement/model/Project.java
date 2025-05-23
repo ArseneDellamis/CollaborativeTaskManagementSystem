@@ -28,12 +28,13 @@ public class Project {
 
     private String description;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @CreationTimestamp
