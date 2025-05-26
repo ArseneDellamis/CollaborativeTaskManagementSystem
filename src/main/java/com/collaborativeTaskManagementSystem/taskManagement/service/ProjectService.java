@@ -106,9 +106,28 @@ public class ProjectService {
      * GET PROJECT BY NAME
      */
     public Project getProjectByName(String name) {
-
         return projectRepo
                 .findByName(name)
-                .orElseThrow(()-> new RuntimeException("Project not found"));
+                .orElseThrow(()-> new RuntimeException("Project not found with name: " + name));
+    }
+    
+    /**
+     * Find a project by either ID or name (case-insensitive exact match)
+     * @param searchTerm Can be project ID or project name
+     * @return The found project
+     * @throws RuntimeException if no project is found
+     */
+    public Project findProjectByIdOrName(String searchTerm) {
+        return projectRepo.findByIdOrNameIgnoreCase(searchTerm)
+                .orElseThrow(() -> new RuntimeException("Project not found with ID or name: " + searchTerm));
+    }
+    
+    /**
+     * Search for projects where ID or name contains the search term (case-insensitive partial match)
+     * @param searchTerm The term to search for in project ID or name
+     * @return List of matching projects (empty if none found)
+     */
+    public List<Project> searchProjects(String searchTerm) {
+        return projectRepo.searchByIdOrNameContainingIgnoreCase(searchTerm);
     }
 }

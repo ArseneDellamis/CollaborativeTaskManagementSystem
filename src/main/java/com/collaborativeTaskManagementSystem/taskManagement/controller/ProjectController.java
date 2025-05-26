@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +179,39 @@ public class ProjectController {
     }
 
     /**
+     * Find project by ID or name (exact match, case-insensitive)
+     * @param searchTerm Project ID or name to search for
+     * @return Project if found
+     */
+    @GetMapping("/search/{searchTerm}")
+    public ResponseEntity<?> findProjectByIdOrName(@PathVariable String searchTerm) {
+        try {
+            Project project = projectService.findProjectByIdOrName(searchTerm);
+            return ResponseEntity.ok(project);
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(HttpStatus.NOT_FOUND, "project", ex.getMessage());
+        }
+    }
+
+    /**
+     * Search for projects where ID or name contains the search term (partial match, case-insensitive)
+     * @param searchTerm Term to search for in project ID or name
+     * @return List of matching projects (can be empty)
+     */
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProjects(@RequestParam("q") String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, "searchTerm", "Search term cannot be empty");
+        }
+        
+        List<Project> projects = projectService.searchProjects(searchTerm);
+        if (projects.isEmpty()) {
+            return ResponseEntity.ok(Collections.singletonMap("message", "No projects found matching: " + searchTerm));
+        }
+        return ResponseEntity.ok(projects);
+    }
+
+    /**
      * Handle validation errors
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -192,6 +226,9 @@ public class ProjectController {
         return errors;
     }
     
+    /**
+     * Build a standardized error response
+     */
     private ResponseEntity<Map<String, String>> buildErrorResponse(HttpStatus status, String field, String message) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put(field, message);

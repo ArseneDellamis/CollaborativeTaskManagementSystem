@@ -89,13 +89,5 @@ public class AuthenticationController {
 
     }
 
-    @GetMapping("/getUserInfo")
-    public ResponseEntity<?> getUserInfo(@NotNull @RequestHeader("Authorization") String token) {
-        jwtToken = token.replace("Bearer ", "");
-        User user = service.getUserInfo(jwtToken);
-        return ResponseEntity.status(HttpStatus.OK).body(new UserInfo(
-                user.getUsername(),
-                user.getEmail()));
-    }
 
 }
