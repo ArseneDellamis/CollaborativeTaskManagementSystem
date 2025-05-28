@@ -15,8 +15,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-    private final ProjectRepository projectRepo;
+    private final ProjectRepository repository;
 
+    /**
+     *
+     * GET ALL PROJECTS
+     */
+    public List<Project> getAllProjects(){
+        return repository.findAll();
+    }
     /**
      *
      * CREATE PROJECT
@@ -31,15 +38,29 @@ public class ProjectService {
                 .permission(TeamPermissions.OWN_TASKS)
                 .startDate(LocalDate.now())
                 .build();
-        return projectRepo.save(project);
+        return repository.save(project);
     }
+
 
     /**
      *
-     * GET ALL PROJECTS
+     * UPDATE PROJECT
      */
-    public List<Project> getAllProjects(){
-        return projectRepo.findAll();
+    public Project updateProject(Long id, ProjectDto request){
+        // Check if project exists
+        Project project = repository
+                .findById(id)
+                .orElseThrow(
+                        ()-> new RuntimeException("Project not found")
+                );
+        String permission = project.getPermission().name();
+        // Check if user has permission to update project
+        if (permission.equalsIgnoreCase(TeamPermissions.OWN_TASKS.name())) {
+            project.setName(request.getProjectName());
+            project.setDescription(request.getProjectDescription());
+            project.setStatus(Status.valueOf(request.getStatus().toUpperCase()));
+        }
+        return repository.save(project);
     }
 
     /**
@@ -47,7 +68,17 @@ public class ProjectService {
      * DELETE PROJECT
      */
     public void deleteProject(Long id){
-        projectRepo.deleteById(id);
+        Project project = repository
+                .findById(id)
+                .orElseThrow(
+                        ()-> new RuntimeException("Project not found")
+                );
+        String permission = project.getPermission().name();
+        // Check if user has permission to delete project
+        if (!permission.equalsIgnoreCase(TeamPermissions.OWN_TASKS.name())) {
+            throw new RuntimeException("You do not have permission to delete this project");
+        }
+        repository.deleteById(id);
     }
 
     /**
@@ -55,7 +86,7 @@ public class ProjectService {
      * ADD MEMBERS TO PROJECT
      */
     public String addMembers(String name, User user){
-        Project project = projectRepo
+        Project project = repository
                 .findByName(name)
                 .orElseThrow(
                         ()-> new RuntimeException("Project not found")
@@ -69,7 +100,7 @@ public class ProjectService {
      * DELETE MEMBERS FROM PROJECT
      */
     public String deleteMember(String name, User user){
-        Project project = projectRepo
+        Project project = repository
                 .findByName(name)
                 .orElseThrow(
                         ()-> new RuntimeException("Project not found")
@@ -83,7 +114,7 @@ public class ProjectService {
      * GET PROJECTS BY USER
      */
     public List<Project> getProjectsByUser(User user){
-        return projectRepo.findAllByProjectManagerId(user.getId());
+        return repository.findAllByProjectManagerId(user.getId());
     }
 
     /**
@@ -91,7 +122,7 @@ public class ProjectService {
      * GET PROJECTS BY TEAM MEMBER
      */
     public List<Project> getProjectsByTeamMember(User user){
-        return projectRepo.findAllByTeamMembersContains(user);
+        return repository.findAllByTeamMembersContains(user);
     }
 
     /**
@@ -99,7 +130,7 @@ public class ProjectService {
      * GET PROJECT BY ID
      */
     public Project getProjectById(Long id) {
-        return projectRepo
+        return repository
                 .findById(id)
                 .orElseThrow(()-> new RuntimeException("Project not found"));
     }
@@ -109,7 +140,7 @@ public class ProjectService {
      * GET PROJECT BY NAME
      */
     public Project getProjectByName(String name) {
-        return projectRepo
+        return repository
                 .findByName(name)
                 .orElseThrow(()-> new RuntimeException("Project not found with name: " + name));
     }
@@ -121,7 +152,7 @@ public class ProjectService {
      * @throws RuntimeException if no project is found
      */
     public Project findProjectByIdOrName(String searchTerm) {
-        return projectRepo.findByIdOrNameIgnoreCase(searchTerm)
+        return repository.findByIdOrNameIgnoreCase(searchTerm)
                 .orElseThrow(() -> new RuntimeException("Project not found with ID or name: " + searchTerm));
     }
     
@@ -131,6 +162,6 @@ public class ProjectService {
      * @return List of matching projects (empty if none found)
      */
     public List<Project> searchProjects(String searchTerm) {
-        return projectRepo.searchByIdOrNameContainingIgnoreCase(searchTerm);
+        return repository.searchByIdOrNameContainingIgnoreCase(searchTerm);
     }
 }

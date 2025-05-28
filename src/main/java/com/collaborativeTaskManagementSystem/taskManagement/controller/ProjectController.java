@@ -75,7 +75,7 @@ public class ProjectController {
      * @return Project details if found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<?> getProjectById(@PathVariable Long id, @AuthenticationPrincipal User user) {
         try {
             Project project = projectService.getProjectById(id);
             return ResponseEntity.ok(project);
@@ -90,7 +90,7 @@ public class ProjectController {
      * @return Project details if found
      */
     @GetMapping("/name/{name}")
-    public ResponseEntity<?> getProjectByName(@PathVariable String name) {
+    public ResponseEntity<?> getProjectByName(@PathVariable String name, @AuthenticationPrincipal User user) {
         try {
             Project project = projectService.getProjectByName(name);
             return ResponseEntity.ok(project);
@@ -111,36 +111,7 @@ public class ProjectController {
             @Valid @RequestBody ProjectDto projectDto) {
         
         try {
-            // Check if project exists
-            Project existingProject = projectService.getProjectById(id);
-            
-            // Check if new name already exists (if name is being changed)
-            if (!existingProject.getName().equals(projectDto.getProjectName()) && 
-                repository.existsByNameIgnoreCase(projectDto.getProjectName())) {
-                return buildErrorResponse(
-                    HttpStatus.CONFLICT,
-                    "projectName",
-                    "A project with this name already exists");
-            }
 
-            // Validate status if provided
-            if (projectDto.getStatus() != null && !projectDto.isValidStatus()) {
-                return buildErrorResponse(
-                    HttpStatus.BAD_REQUEST,
-                    "status",
-                    "Invalid status. Valid statuses are: " + ProjectDto.getValidStatusValues());
-            }
-
-            // Update project
-            existingProject.setName(projectDto.getProjectName());
-            existingProject.setDescription(projectDto.getProjectDescription());
-            
-            if (projectDto.getStatus() != null) {
-                existingProject.setStatus(Status.valueOf(projectDto.getStatus().toUpperCase()));
-            }
-            
-            Project updatedProject = projectService.editProject(existingProject);
-            return ResponseEntity.ok(updatedProject);
             
         } catch (RuntimeException ex) {
             return buildErrorResponse(HttpStatus.NOT_FOUND, "projectId", "Project not found with id: " + id);
