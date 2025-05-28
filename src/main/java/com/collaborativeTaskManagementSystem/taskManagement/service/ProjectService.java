@@ -43,15 +43,6 @@ public class ProjectService {
     }
 
     /**
-     * EDIT PROJECT
-     */
-    public Project editProject(Project project){
-
-        return projectRepo.save(project);
-
-    }
-
-    /**
      *
      * DELETE PROJECT
      */
