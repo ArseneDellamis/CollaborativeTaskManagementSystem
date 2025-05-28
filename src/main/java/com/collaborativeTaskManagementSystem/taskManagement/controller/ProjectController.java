@@ -63,16 +63,7 @@ public class ProjectController {
         }
 
         // Create and save project
-        Project project = Project.builder()
-            .name(request.getProjectName())
-            .projectManager(user)
-            .description(request.getProjectDescription())
-            .status(Status.valueOf(request.getStatus().toUpperCase()))
-            .startDate(LocalDate.now())
-            .build();
-
-        Project createdProject = projectService.createProject(project);
-        
+        Project createdProject = projectService.createProject(request, user);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(createdProject);

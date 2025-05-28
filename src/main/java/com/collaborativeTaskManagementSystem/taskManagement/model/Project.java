@@ -30,8 +30,8 @@ public class Project {
 
     private String description;
 
-    @Column
     private LocalDate startDate;
+
 
     private LocalDate endDate;
 
@@ -55,7 +55,9 @@ public class Project {
             fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
-    private TeamPermissions permissions;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TeamPermissions permission;
 
     @ManyToMany
     @JoinTable(
