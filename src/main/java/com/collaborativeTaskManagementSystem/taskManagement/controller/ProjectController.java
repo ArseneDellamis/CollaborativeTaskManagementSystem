@@ -111,7 +111,9 @@ public class ProjectController {
             @Valid @RequestBody ProjectDto projectDto) {
         
         try {
-
+            projectService.updateProject(id, projectDto);
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body("Project updated successfully");
             
         } catch (RuntimeException ex) {
             return buildErrorResponse(HttpStatus.NOT_FOUND, "projectId", "Project not found with id: " + id);

@@ -43,10 +43,9 @@ public class ProjectService {
 
 
     /**
-     *
      * UPDATE PROJECT
      */
-    public Project updateProject(Long id, ProjectDto request){
+    public void updateProject(Long id, ProjectDto request){
         // Check if project exists
         Project project = repository
                 .findById(id)
@@ -60,7 +59,7 @@ public class ProjectService {
             project.setDescription(request.getProjectDescription());
             project.setStatus(Status.valueOf(request.getStatus().toUpperCase()));
         }
-        return repository.save(project);
+        repository.save(project);
     }
 
     /**
