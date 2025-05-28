@@ -1,7 +1,7 @@
 package com.collaborativeTaskManagementSystem.taskManagement.service;
 
 import com.collaborativeTaskManagementSystem.taskManagement.jwtpackage.JwtService;
-import com.collaborativeTaskManagementSystem.taskManagement.model.Roles;
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.Roles;
 import com.collaborativeTaskManagementSystem.taskManagement.model.User;
 import com.collaborativeTaskManagementSystem.taskManagement.payload.AuthenticationResponse;
 import com.collaborativeTaskManagementSystem.taskManagement.payload.RegisterRequest;

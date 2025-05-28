@@ -1,5 +1,6 @@
 package com.collaborativeTaskManagementSystem.taskManagement.model;
 
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

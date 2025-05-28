@@ -1,6 +1,6 @@
 package com.collaborativeTaskManagementSystem.taskManagement.payload;
 
-import com.collaborativeTaskManagementSystem.taskManagement.model.Status;
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.Status;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

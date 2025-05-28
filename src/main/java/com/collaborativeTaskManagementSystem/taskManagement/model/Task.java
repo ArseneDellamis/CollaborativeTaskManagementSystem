@@ -1,6 +1,7 @@
 package com.collaborativeTaskManagementSystem.taskManagement.model;
 
 
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Builder;

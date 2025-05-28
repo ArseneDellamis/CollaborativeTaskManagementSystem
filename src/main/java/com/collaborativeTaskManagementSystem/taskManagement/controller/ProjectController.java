@@ -1,7 +1,7 @@
 package com.collaborativeTaskManagementSystem.taskManagement.controller;
 
 import com.collaborativeTaskManagementSystem.taskManagement.model.Project;
-import com.collaborativeTaskManagementSystem.taskManagement.model.Status;
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.Status;
 import com.collaborativeTaskManagementSystem.taskManagement.model.User;
 import com.collaborativeTaskManagementSystem.taskManagement.payload.ProjectDto;
 import com.collaborativeTaskManagementSystem.taskManagement.repository.ProjectRepository;

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,6 +87,24 @@ public class AuthenticationController {
     public String getUsername(@NotNull @RequestHeader("Authorization") String token) {
        jwtToken = token.replace("Bearer ", "");
        return service.getUsername(jwtToken);
+
+    }
+
+    @GetMapping("/userInfo")
+    public ResponseEntity<?> getUserProfileInfo(@AuthenticationPrincipal User user) {
+
+        try {
+            UserInfo profileInfo = new UserInfo();
+            profileInfo.setUsername(user.getUsername());
+            profileInfo.setEmail(user.getEmail());
+            return ResponseEntity.ok(profileInfo);
+        } catch (UsernameNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseHandler.<String>builder()
+                            .status(HttpStatus.NOT_FOUND)
+                            .data(ex.getMessage())
+                            .build());
+        }
 
     }
 

@@ -1,5 +1,7 @@
 package com.collaborativeTaskManagementSystem.taskManagement.model;
 
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.Status;
+import com.collaborativeTaskManagementSystem.taskManagement.model.constants.TeamPermissions;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Builder;
@@ -52,6 +54,8 @@ public class Project {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
+
+    private TeamPermissions permissions;
 
     @ManyToMany
     @JoinTable(
